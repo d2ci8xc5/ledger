@@ -1,5 +1,6 @@
 pub mod account;
 pub mod transaction;
+pub mod ledger;
 
 use account::Account as acc;
 use shrust::{Shell, ShellIO};

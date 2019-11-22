@@ -1,6 +1,7 @@
 use crate::account::Account;
 use std::fmt;
-///
+
+/// Transactions on Accounts in the tuple (Account, (+-)amount)
 pub struct Transaction {
     pub entries: Vec<(Account, i32)>,
 }
@@ -22,12 +23,9 @@ impl Transaction {
 
         return Ok(Transaction{ entries });
     }
-
-    ///Execute and commit the transaction to the ledger
-    pub fn complete(&mut self) {
-    }
 }
 
+/// Display transaction in string
 impl fmt::Display for Transaction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "")

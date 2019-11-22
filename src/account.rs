@@ -1,11 +1,11 @@
 use std::fmt;
+use std::cmp;
 
 pub struct Account {
     name: String,
     pub balance: i32,
     pub id: i32,
 }
-
 impl Account {
     fn new(name: String, balance: i32, id: i32) -> Result<Account, &'static str> {
         return match balance {
@@ -16,9 +16,15 @@ impl Account {
     }
 }
 
-impl fmt::Display for Account{
+impl fmt::Display for Account {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{} ({}): {}\n", self.id, self.name, self.id)
+    }
+}
+
+impl cmp::PartialEq for Account {
+    fn eq(&self, other: &Self) -> bool {
+        (self.name == other.name && self.balance == other.balance && self.id == other.id)
     }
 }
 #[cfg(test)]
@@ -27,9 +33,9 @@ mod tests {
 
     #[test]
     fn test_account_new() {
-        let account = Account::new(String::from("account_0"), 100u32, 0i32);
+        let account = Account::new(String::from("account_0"), 100i32, 0i32);
         match account {
-            Ok(acc) => {},
+            Ok(acc) => assert!(true),
             Err(reason) => assert!(false), 
             _ => assert!(false),
         }
