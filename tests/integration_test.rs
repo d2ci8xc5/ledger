@@ -1,6 +1,4 @@
 use ledger;
 
 #[test]
-fn test() {
-    
-}
+fn test() {}

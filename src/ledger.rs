@@ -1,15 +1,26 @@
 use crate::transaction::Transaction;
+use crate::database::Database;
 
-pub struct ledger {
-    pub record: Vec<Transaction>, 
+// TODO: database
+
+pub struct Ledger {
+    pub record: Vec<Transaction>,
+    //pub database: *Database,
 }
 
-impl ledger {
-   // TODO: add database support (?) 
-
+impl Ledger {
+    // TODO: add database support (?)
+    pub fn new(record: Vec<Transaction>) -> Ledger {
+        //let database: *Database = & Database::new();
+        Ledger { record }
+    }
 
     /// Write a transaction to the ledger history
-    pub fn commit(&mut self, tx: Transaction) {
+    fn commit(&mut self, tx: Transaction) {
         self.record.push(tx);
+    }
+
+    pub fn to_database(&self) {
+         
     }
 }

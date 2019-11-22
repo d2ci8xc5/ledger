@@ -1,5 +1,5 @@
-use ledger::input_loop;
+use ledger::run_loop;
 
 fn main() {
-    input_loop();
+    run_loop();
 }
