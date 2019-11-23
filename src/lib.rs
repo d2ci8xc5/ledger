@@ -17,8 +17,10 @@ pub fn print_header() {
 pub fn run_loop() {
     let mut next_txid = 0i32; 
     let mut next_accid = 0i32; 
-
-    let main_ledger = Ledger::new(Vec::new());
+    
+    let main_accounts: Vec<Account> = Vec::new();
+    let main_transactions: Vec<Transaction> = Vec::new();
+    let main_ledger = Ledger::new(main_accounts, main_transactions);
 
     let v = Vec::new();
     let mut shell = Shell::new(v);
@@ -27,6 +29,21 @@ pub fn run_loop() {
     /// Create account
     shell.new_command(
         "ca <account name> <account balance>",
+        "Create account",
+        1,
+        |io, next_acc, s| {
+            // Parse CLI args
+            let name: String = s[0].to_string();
+            let balance: i32 = s[1].parse::<i32>().unwrap();
+            let account: Account = Account::new(0, name, balance).unwrap();
+             
+            Ok(())
+        },
+    );
+
+    /// Create transaction 
+    shell.new_command(
+        "ct <date> <account_name_0> <amount_0> ... <account_name_x> <amount_x>",
         "Create account",
         1,
         |io, v, s| {

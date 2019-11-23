@@ -1,26 +1,54 @@
 use crate::transaction::Transaction;
 use crate::database::Database;
-
+use crate::account::Account;
 // TODO: database
 
 pub struct Ledger {
-    pub record: Vec<Transaction>,
+    pub accounts: Vec<Account>,
+    pub transactions: Vec<Transaction>,
     //pub database: *Database,
 }
 
 impl Ledger {
     // TODO: add database support (?)
-    pub fn new(record: Vec<Transaction>) -> Ledger {
+    pub fn new(accounts: Vec<Account>, transactions: Vec<Transaction>) -> Ledger {
         //let database: *Database = & Database::new();
-        Ledger { record }
+        Ledger { accounts, transactions }
     }
 
-    /// Write a transaction to the ledger history
-    fn commit(&mut self, tx: Transaction) {
-        self.record.push(tx);
+    /// Add an account to the ledger
+    fn add_account(&mut self, acc: Account) -> bool {
+
+        // Only allow addition of unique txids to ledger
+        for account in self.accounts.iter() {
+            if acc.id == account.id {
+                return false;
+            }
+        }
+        self.accounts.push(acc);
+        return true;
     }
 
-    pub fn to_database(&self) {
-         
+    /// Write a transaction to the ledger
+    fn add_transaction(&mut self, tx: Transaction) -> bool {
+        
+        // Only allow addition of unique txids to ledger
+        for transaction in self.transactions.iter() {
+            if tx.id == transaction.id {
+                return false;
+            }
+        }
+        self.transactions.push(tx);
+        return true;
     }
+
+    /// Output ledger state to database
+    pub fn to_database(&self) -> Database {
+        Database {} 
+    }
+
+    //// Output ledger state to database
+    //pub fn from_database(&self) -> Ledger {
+    //         
+    //}
 }
