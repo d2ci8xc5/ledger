@@ -1,6 +1,7 @@
 use crate::account::Account;
 use chrono::prelude::*;
 use std::fmt;
+use chrono::NaiveDate;
 
 /// Transactions represent the transfer of balance between Accounts.
 /// All transactions are required to have a net zero balance.
@@ -31,8 +32,12 @@ impl Transaction {
             return Err("Transaction is not balanced");
         }
 
-        // TODO: Date validification <YYYY/MM/DD>
-        
+        // Date validification <YYYY/MM/DD>
+        match NaiveDate::parse_from_str(&date.to_string(), "%Y/%m/%d") {
+            Ok(date) => (),
+            Err(chrono_except) => return Err("Invalid date"),
+       }
+
         return Ok(Transaction {
             id,
             date, 
@@ -61,7 +66,7 @@ mod tests {
         vec.push(tuple_1);
         match Transaction::new(0, String::from("2019/03/20"), vec) {
             Ok(tx) => (),
-            Err(reason) => assert!(false),
+            Err(reason) => {println!("{}", reason); assert!(false)},
             _ => assert!(false),
         }
 
@@ -109,9 +114,8 @@ mod tests {
         vec.push(tuple_0);
         vec.push(tuple_1);
         
-        // Correct format is YYYY/MM/DD
-        let invalid_date = "2019-22-22";
-        match Transaction::new(0, String::from("2019/03/20"), vec) {
+        let invalid_date = String::from("2019-22-22");
+        match Transaction::new(0, invalid_date, vec) {
             Ok(tx) => assert!(false),
             Err(reason) => (),
             _ => assert!(false),

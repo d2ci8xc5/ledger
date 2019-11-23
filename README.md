@@ -1,5 +1,7 @@
 # ledger
 [![Build Status](https://travis-ci.org/d2ci8xc5/ledger.svg?branch=master)](https://travis-ci.org/d2ci8xc5/ledger) [![codecov](https://codecov.io/gh/d2ci8xc5/ledger/branch/master/graph/badge.svg)](https://codecov.io/gh/d2ci8xc5/ledger)
+### support 
+Working on Ubuntu LTS, not sure on support for Windows, MacOS and other distributions. 
 ### brief
 ```
 Write a simple, interactive double-entry ledger with the following features:

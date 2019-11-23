@@ -19,7 +19,7 @@ impl Ledger {
     /// Add an account to the ledger
     fn add_account(&mut self, acc: Account) -> bool {
 
-        // Only allow addition of unique txids to ledger
+        // Only allow addition of unique accounts to ledger
         for account in self.accounts.iter() {
             if acc.id == account.id {
                 return false;
@@ -42,13 +42,27 @@ impl Ledger {
         return true;
     }
 
-    /// Output ledger state to database
-    pub fn to_database(&self) -> Database {
-        Database {} 
-    }
+    //// Output ledger state to database
+    //pub fn to_database(&self) -> Database {
+    //    Database {} 
+    //}
 
     //// Output ledger state to database
     //pub fn from_database(&self) -> Ledger {
     //         
     //}
+
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ledger_new() {
+        let acc_vec = Vec::new();
+        let tx_vec = Vec::new();
+        let ledger = Ledger::new(acc_vec, tx_vec);
+
+    }
 }

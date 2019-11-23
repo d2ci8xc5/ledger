@@ -9,4 +9,3 @@ edition = "2018"
 [dependencies]
 shrust = "0.0.7" #Quick CLI command loop and registry 
 chrono = "0.4" # Date/Time
-rusqlite = "0.20.0"
