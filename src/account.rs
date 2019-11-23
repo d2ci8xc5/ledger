@@ -1,6 +1,6 @@
+use serde::{Deserialize, Serialize};
 use std::cmp;
 use std::fmt;
-use serde::{Serialize, Deserialize};
 
 /// Accounts represent a pool of funds
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -12,7 +12,7 @@ pub struct Account {
 impl Account {
     pub fn new(id: i32, name: String, balance: i32) -> Result<Account, &'static str> {
         return match balance {
-            b if b >= 0 => Ok(Account {id, name, balance}),
+            b if b >= 0 => Ok(Account { id, name, balance }),
             b if b < 0 => Err("invalid balance ( less than zero)"),
             _ => Err("unknown error"),
         };
@@ -49,7 +49,7 @@ mod tests {
     fn test_equality() {
         let acc_0 = Account::new(0, String::from("acc_0"), 100);
         let acc_eq_0 = Account::new(0, String::from("acc_0"), 100);
-        assert_eq!(acc_0, acc_eq_0); 
+        assert_eq!(acc_0, acc_eq_0);
     }
 
     #[test]
@@ -57,7 +57,7 @@ mod tests {
         match Account::new(0, String::from("acc_0"), -100) {
             Ok(acc) => assert!(false),
             Err(reason) => (),
-            _ => assert!(false),  
+            _ => assert!(false),
         }
     }
 }

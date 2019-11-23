@@ -1,8 +1,8 @@
 use crate::account::Account;
 use chrono::prelude::*;
-use std::fmt;
 use chrono::NaiveDate;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use std::fmt;
 
 /// Transactions represent the transfer of funds between Accounts.
 /// All transactions are required to have a net zero balance.
@@ -27,7 +27,7 @@ impl Transaction {
             }
             sumation += entry.1;
         }
-        
+
         // Transaction must have net zero balance
         if sumation != 0 {
             return Err("Transaction is not balanced");
@@ -37,13 +37,9 @@ impl Transaction {
         match NaiveDate::parse_from_str(&date.to_string(), "%Y/%m/%d") {
             Ok(date) => (),
             Err(chrono_except) => return Err("Invalid date"),
-       }
+        }
 
-        return Ok(Transaction {
-            id,
-            date, 
-            entries,
-        });
+        return Ok(Transaction { id, date, entries });
     }
 }
 
@@ -60,25 +56,28 @@ mod tests {
     #[test]
     fn test_transaction_new() {
         // format (Account, balance to move)
-        let tuple_0 = (Account::new(0, String::from("acc_0"), 100).unwrap(), 100); 
-        let tuple_1 = (Account::new(1, String::from("acc_1"), 100).unwrap(), -100); 
+        let tuple_0 = (Account::new(0, String::from("acc_0"), 100).unwrap(), 100);
+        let tuple_1 = (Account::new(1, String::from("acc_1"), 100).unwrap(), -100);
         let mut vec: Vec<(Account, i32)> = Vec::new();
         vec.push(tuple_0);
         vec.push(tuple_1);
         match Transaction::new(0, String::from("2019/03/20"), vec) {
             Ok(tx) => (),
-            Err(reason) => {println!("{}", reason); assert!(false)},
+            Err(reason) => {
+                println!("{}", reason);
+                assert!(false)
+            }
             _ => assert!(false),
         }
 
-        // TODO: Check fields are valid 
+        // TODO: Check fields are valid
     }
 
     #[test]
     fn test_transaction_unbalanced() {
         // format (Account, balance to move)
-        let tuple_0 = (Account::new(0, String::from("acc_0"), 100).unwrap(), 100); 
-        let tuple_1 = (Account::new(1, String::from("acc_1"), 100).unwrap(), 100); 
+        let tuple_0 = (Account::new(0, String::from("acc_0"), 100).unwrap(), 100);
+        let tuple_1 = (Account::new(1, String::from("acc_1"), 100).unwrap(), 100);
         let mut vec: Vec<(Account, i32)> = Vec::new();
         vec.push(tuple_0);
         vec.push(tuple_1);
@@ -92,8 +91,8 @@ mod tests {
     #[test]
     fn test_invalid_date() {
         // format (Account, balance to move)
-        let tuple_0 = (Account::new(0, String::from("acc_0"), 100).unwrap(), 100); 
-        let tuple_1 = (Account::new(1, String::from("acc_1"), 100).unwrap(), 100); 
+        let tuple_0 = (Account::new(0, String::from("acc_0"), 100).unwrap(), 100);
+        let tuple_1 = (Account::new(1, String::from("acc_1"), 100).unwrap(), 100);
         let mut vec: Vec<(Account, i32)> = Vec::new();
         vec.push(tuple_0);
         vec.push(tuple_1);
@@ -109,12 +108,12 @@ mod tests {
     #[test]
     fn test_invalid_date_format() {
         // format (Account, balance to move)
-        let tuple_0 = (Account::new(0, String::from("acc_0"), 100).unwrap(), 100); 
-        let tuple_1 = (Account::new(1, String::from("acc_1"), 100).unwrap(), 100); 
+        let tuple_0 = (Account::new(0, String::from("acc_0"), 100).unwrap(), 100);
+        let tuple_1 = (Account::new(1, String::from("acc_1"), 100).unwrap(), 100);
         let mut vec: Vec<(Account, i32)> = Vec::new();
         vec.push(tuple_0);
         vec.push(tuple_1);
-        
+
         let invalid_date = String::from("2019-22-22");
         match Transaction::new(0, invalid_date, vec) {
             Ok(tx) => assert!(false),

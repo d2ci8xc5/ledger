@@ -2,82 +2,88 @@ pub mod account;
 pub mod ledger;
 pub mod transaction;
 
+use crate::ledger::Ledger;
 use account::Account as acc;
 use account::Account;
-use crate::ledger::Ledger;
-use shrust::{Shell, ShellIO};
+use std::io;
 use std::io::prelude::*;
 use transaction::Transaction;
 
+/// Initial greeting to the program
 pub fn print_header() {
     println!("ledger system, type \"help\" for commands");
 }
 
+/// Help command 
+pub fn print_help() {
+   println!(
+    "\nsl\t\t: Save ledger state to disk\n\
+    ll\t\t: Load ledger state from disk\n\
+    ca\t\t: Create account\n\
+    ct\t\t: Create transaction\n\
+    la\t\t: Print account\n\
+    lt\t\t: Print transaction\n\
+    quit\t\t: Exit ledger application saving ledger state to disk\n\
+    nsquit\t\t: Exit ledger application without saving ledger state to disk\n\
+    help\t\t: Print this help text\n\n\
+    NOTE: optional arguments are annotated with [optional] \
+    and required arguments with <required>
+   "
+   ); 
+}
+
+/// Program input loop
 pub fn run_loop() {
-    let mut next_txid = 0i32; 
-    let mut next_accid = 0i32; 
-    
-    let main_accounts: Vec<Account> = Vec::new();
-    let main_transactions: Vec<Transaction> = Vec::new();
-    let main_ledger = Ledger::new(main_accounts, main_transactions);
+    let mut next_txid = 0i32;
+    let mut next_accid = 0i32;
 
-    let v = Vec::new();
-    let mut shell = Shell::new(v);
-
+    let main_ledger = Ledger::new(Vec::new(), Vec::new());
+    //let main_file;
     print_header();
-    /// Create account
-    shell.new_command(
-        "ca <account name> <account balance>",
-        "Create account",
-        1,
-        |io, next_acc, s| {
-            // Parse CLI args
-            let name: String = s[0].to_string();
-            let balance: i32 = s[1].parse::<i32>().unwrap();
-            let account: Account = Account::new(0, name, balance).unwrap();
-             
-            Ok(())
-        },
-    );
+    let input = io::stdin();
 
-    /// Create transaction 
-    shell.new_command(
-        "ct <date> <account_name_0> <amount_0> ... <account_name_x> <amount_x>",
-        "Create account",
-        1,
-        |io, v, s| {
-            for i in 0..s.len() {}
-            Ok(())
-        },
-    );
-
-    /// List account balances
-    shell.new_command(
-        "la [account_name] | [account_id]",
-        "List account balances",
-        1,
-        |io, v, s| Ok(()),
-    );
-
-    /// List transactions
-    shell.new_command(
-        "lt [account_name][account_id]",
-        "List transactions",
-        1,
-        |io, v, s| Ok(()),
-    );
-
-    shell.new_command("push", "Add string to the list", 1, |io, v, s| {
-        writeln!(io, "Pushing {}", s[0])?;
-        v.push(s[0].to_string());
-        Ok(())
-    });
-    shell.new_command_noargs("list", "List strings", |io, v| {
-        for s in v {
-            writeln!(io, "{}", s)?;
+    loop {
+        let mut buffer = String::new();
+        print!("> ");
+        io::stdout().flush().unwrap();
+        if input.read_line(&mut buffer).is_err() {
+            break;
         }
-        Ok(())
-    });
+        let args: Vec<&str> = buffer.trim_end().split(' ').collect();
+        match args[0] {
+            "help" => {
+                print_help();    
+            }
+            "sl" => { // Save ledger
+                
+            }
+            "ll" => { // Load ledger
 
-    shell.run_loop(&mut ShellIO::default());
+            }
+            "ca" => { // Create account
+
+            }
+            "ct" => { // Create transaction
+
+            }
+            "la" => { // List account balance
+
+            }
+            "lt" => { // List transactions
+
+            }
+            "quit" => { // Quit
+                
+            }
+            "nsquit" => { // No save quit
+                
+            }
+            "" => {
+
+            }
+            _ => {
+                println!("unknown command, type \"help\" for a list of availiable commands"); 
+            }
+        }
+    }
 }
