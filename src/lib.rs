@@ -1,5 +1,4 @@
 pub mod account;
-pub mod database;
 pub mod ledger;
 pub mod transaction;
 

@@ -9,6 +9,6 @@
 - I would probably make this project using a more mature language like C or Java. Rust doesn't have a stable (or even functionally complete) GUI library which made things difficult for me.
 - I would change the structure of the project to the client & server model.
 - I would use a proper database instead of serializing & deserializing objects to disk.
-
+- If I would continue using rust I would make a webUI interface using either the library Rocket or rusts webassembly bindings
 ### overall
 Good exercise. Got me thinking about how the bitcoin ledger system works again and what parts of it that I wanted to use.

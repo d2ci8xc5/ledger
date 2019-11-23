@@ -2,10 +2,11 @@ use crate::account::Account;
 use chrono::prelude::*;
 use std::fmt;
 use chrono::NaiveDate;
+use serde::{Serialize, Deserialize};
 
-/// Transactions represent the transfer of balance between Accounts.
+/// Transactions represent the transfer of funds between Accounts.
 /// All transactions are required to have a net zero balance.
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Transaction {
     pub id: i32,
     pub date: String,

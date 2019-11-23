@@ -1,7 +1,9 @@
 use std::cmp;
 use std::fmt;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+/// Accounts represent a pool of funds
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Account {
     pub id: i32,
     pub name: String,
