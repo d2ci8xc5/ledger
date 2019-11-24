@@ -5,6 +5,7 @@ use serde_json;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
 use std::io::{Read, Seek, SeekFrom, Write};
+
 /// Ledger represents a collection of accounts and transactions.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Ledger {
@@ -38,6 +39,7 @@ impl Ledger {
 
     // TODO: only allow added accounts to tx (collect)
     /// Write a transaction to the ledger
+    /// Upon addition of a transaction to the ledger, the transaction will be committed
     pub fn add_transaction(&mut self, tx: Transaction) -> bool {
         // Only allow addition of unique txids to ledger
         for transaction in self.transactions.iter() {
@@ -45,8 +47,20 @@ impl Ledger {
                 return false;
             }
         }
+        self.commit(&tx);
         self.transactions.push(tx);
         return true;
+    }
+
+    /// Add the transaction balance changes to the account
+    fn commit(&mut self, tx: &Transaction) {
+        for (account, balance) in tx.entries.iter() {
+            for i in 0..self.accounts.len() {
+                if self.accounts[i].name == account.name {
+                    self.accounts[i].balance += balance;
+                }
+            }
+        }
     }
 
     /// Serialize ledger to disk
@@ -78,10 +92,21 @@ impl Ledger {
         };
     }
 
+    /// Fetch cloned account from ledger by searching name
     pub fn get_acc_by_name(&self, name: String) -> Option<Account> {
         for account in &self.accounts {
             if account.name == name {
                 return Some(account.clone());
+            }
+        }
+        return None;
+    }
+
+    /// Fetch cloned transaction from ledger by searching by name
+    pub fn get_tx_by_name(&self, name: String) -> Option<Transaction> {
+        for tx in &self.transactions {
+            if tx.name == name {
+                return Some(tx.clone());
             }
         }
         return None;
@@ -112,7 +137,7 @@ mod tests {
         let mut vec: Vec<(Account, i32)> = Vec::new();
         vec.push(tuple_0);
         vec.push(tuple_1);
-        let tx_0 = Transaction::new(0, String::from("2019/03/20"), vec).unwrap();
+        let tx_0 = Transaction::new(0, String::from("2019/03/20"), String::from(""), vec).unwrap();
 
         let acc_vec = vec![acc_0, acc_1];
         let tx_vec = vec![tx_0];
@@ -139,8 +164,46 @@ mod tests {
         acc_vec.push(acc_1.clone());
         let tx_vec = Vec::new();
         let ledger = Ledger::new(acc_vec, tx_vec);
-        
+
         let account: Account = ledger.get_acc_by_name(String::from("acc_0")).unwrap();
         assert_eq!(account.name, String::from("acc_0"));
+    }
+
+    #[test]
+    fn test_get_tx_by_name() {
+        let acc_0 = Account::new(0, String::from("acc_0"), 100).unwrap();
+        let acc_1 = Account::new(1, String::from("acc_1"), 100).unwrap();
+        let mut acc_vec = Vec::new();
+        acc_vec.push(acc_0.clone());
+        acc_vec.push(acc_1.clone());
+        let tx_vec = Vec::new();
+        let ledger = Ledger::new(acc_vec, tx_vec);
+
+        let account: Account = ledger.get_acc_by_name(String::from("acc_0")).unwrap();
+        assert_eq!(account.name, String::from("acc_0"));
+    }
+
+    #[test]
+    fn test_commit() {
+        let acc_0 = Account::new(0, String::from("acc_0"), 100).unwrap();
+        let acc_1 = Account::new(1, String::from("acc_1"), 100).unwrap();
+        let mut acc_vec = Vec::new();
+        acc_vec.push(acc_0.clone());
+        acc_vec.push(acc_1.clone());
+        // Transfer 100 units of currency from acc_0 to acc_1
+        let mut ledger = Ledger::new(acc_vec, Vec::new());
+        let tx = Transaction::new(
+            0,
+            String::from("2018/05/3"),
+            String::from(""),
+            vec![(acc_0, -100), (acc_1, 100)],
+        )
+        .unwrap();
+
+        // Commit happens here
+        ledger.add_transaction(tx);
+
+        assert_eq!(ledger.accounts[0].balance, 0i32);
+        assert_eq!(ledger.accounts[1].balance, 200i32);
     }
 }

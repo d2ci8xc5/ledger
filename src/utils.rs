@@ -1,7 +1,7 @@
-use prettytable::{Table, Row, Cell};
 use crate::account::Account;
-use crate::transaction::Transaction;
 use crate::ledger::Ledger;
+use crate::transaction::Transaction;
+use prettytable::{Cell, Row, Table};
 
 /// Initial greeting to the program
 pub fn print_header() {
@@ -32,9 +32,13 @@ pub fn list_account(vec_acc: &Vec<Account>) {
 
     // Table header
     table.add_row(row!("id", "name", "balance"));
-        for account in vec_acc.iter() {
-            table.add_row(row!(account.id.to_string(), account.name, account.balance.to_string()));
-        }
+    for account in vec_acc.iter() {
+        table.add_row(row!(
+            account.id.to_string(),
+            account.name,
+            account.balance.to_string()
+        ));
+    }
     table.printstd();
 }
 
@@ -43,13 +47,24 @@ pub fn list_transaction(vec_tx: &Vec<Transaction>) {
     let mut table = Table::new();
 
     // Table header
-    table.add_row(row!("id", "date", "account name", "change in balance"));
-        for tx in vec_tx.iter() {
-            table.add_row(row!(tx.id.to_string(), tx.date.to_string(), "", ""));
-            for (acc, bal) in tx.entries.iter() {
-                table.add_row(row!("", "", acc.name.to_string(), bal.to_string()));
-            }
+    table.add_row(row!(
+        "id",
+        "date",
+        "transaction name",
+        "account name",
+        "change in balance"
+    ));
+    for tx in vec_tx.iter() {
+        table.add_row(row!(
+            tx.id.to_string(),
+            tx.date.to_string(),
+            tx.name.to_string(),
+            "",
+            ""
+        ));
+        for (acc, bal) in tx.entries.iter() {
+            table.add_row(row!("", "", "", acc.name.to_string(), bal.to_string()));
         }
+    }
     table.printstd();
-
 }

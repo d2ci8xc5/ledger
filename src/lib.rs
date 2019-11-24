@@ -3,7 +3,8 @@ pub mod ledger;
 pub mod transaction;
 pub mod utils;
 
-#[macro_use] extern crate prettytable;
+#[macro_use]
+extern crate prettytable;
 use crate::account::Account;
 use crate::ledger::Ledger;
 use crate::transaction::Transaction;
@@ -117,7 +118,7 @@ pub fn run_loop() {
                 }
 
                 let date = String::from(args[1]);
-                let tx = match Transaction::new(next_txid, date, entries) {
+                let tx = match Transaction::new(next_txid, date, String::from(""), entries) {
                     Ok(trans) => trans,
                     Err(reason) => {
                         println!("{}", reason);
@@ -132,17 +133,19 @@ pub fn run_loop() {
                     continue;
                 }
             }
-            "la" => { // List account balance
-                // Empty call 
+            "la" => {
+                // List account balance
+                // Empty call
                 if args.len() == 1 {
                     list_account(&main_ledger.accounts);
                 } else {
                     // Specified account
                     let acc = main_ledger.get_acc_by_name(String::from(args[1])).unwrap();
-                    list_account(&vec!(acc));
+                    list_account(&vec![acc]);
                 }
             }
-            "lt" => { // List transactions
+            "lt" => {
+                // List transactions
                 list_transaction(&main_ledger.transactions);
             }
             "quit" => {

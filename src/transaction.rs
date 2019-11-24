@@ -10,6 +10,7 @@ use std::fmt;
 pub struct Transaction {
     pub id: i32,
     pub date: String,
+    pub name: String,
     pub entries: Vec<(Account, i32)>,
 }
 
@@ -17,6 +18,7 @@ impl Transaction {
     pub fn new(
         id: i32,
         date: String,
+        name: String,
         entries: Vec<(Account, i32)>,
     ) -> Result<Transaction, &'static str> {
         let mut sumation: i32 = 0;
@@ -39,22 +41,12 @@ impl Transaction {
             Err(chrono_except) => return Err("Invalid date"),
         }
 
-        return Ok(Transaction { id, date, entries });
-    }
-
-    /// Execute the transaction
-    pub fn commit(&mut self) {
-        for entry in &mut self.entries {
-            // Add/remove balance from account
-            entry.0.balance += entry.1;
-        }
-    }
-}
-
-/// Display transaction in string
-impl fmt::Display for Transaction {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "")
+        return Ok(Transaction {
+            id,
+            date,
+            name,
+            entries,
+        });
     }
 }
 
@@ -69,12 +61,9 @@ mod tests {
         let mut vec: Vec<(Account, i32)> = Vec::new();
         vec.push(tuple_0);
         vec.push(tuple_1);
-        match Transaction::new(0, String::from("2019/03/20"), vec) {
+        match Transaction::new(0, String::from("2019/03/20"), String::from(""), vec) {
             Ok(tx) => (),
-            Err(reason) => {
-                println!("{}", reason);
-                assert!(false)
-            }
+            Err(reason) => assert!(false),
             _ => assert!(false),
         }
 
@@ -89,7 +78,7 @@ mod tests {
         let mut vec: Vec<(Account, i32)> = Vec::new();
         vec.push(tuple_0);
         vec.push(tuple_1);
-        match Transaction::new(0, String::from("2019/03/20"), vec) {
+        match Transaction::new(0, String::from("2019/03/20"), String::from(""), vec) {
             Ok(tx) => assert!(false),
             Err(reason) => (),
             _ => assert!(false),
@@ -106,7 +95,7 @@ mod tests {
         vec.push(tuple_1);
 
         let invalid_date = String::from("2019/22/22");
-        match Transaction::new(0, invalid_date, vec) {
+        match Transaction::new(0, invalid_date, String::from(""), vec) {
             Ok(tx) => assert!(false),
             Err(reason) => (),
             _ => assert!(false),
@@ -123,7 +112,7 @@ mod tests {
         vec.push(tuple_1);
 
         let invalid_date = String::from("2019-22-22");
-        match Transaction::new(0, invalid_date, vec) {
+        match Transaction::new(0, invalid_date, String::from(""), vec) {
             Ok(tx) => assert!(false),
             Err(reason) => (),
             _ => assert!(false),
