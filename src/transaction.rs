@@ -41,6 +41,14 @@ impl Transaction {
 
         return Ok(Transaction { id, date, entries });
     }
+
+    /// Execute the transaction
+    pub fn commit(&mut self) {
+        for entry in &mut self.entries {
+            // Add/remove balance from account
+            entry.0.balance += entry.1;
+        }
+    }
 }
 
 /// Display transaction in string

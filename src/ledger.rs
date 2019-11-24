@@ -3,8 +3,8 @@ use crate::transaction::Transaction;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::fs::File;
+use std::io::{BufRead, BufReader, Error};
 use std::io::{Read, Seek, SeekFrom, Write};
-
 /// Ledger represents a collection of accounts and transactions.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Ledger {
@@ -39,7 +39,6 @@ impl Ledger {
     // TODO: only allow added accounts to tx (collect)
     /// Write a transaction to the ledger
     pub fn add_transaction(&mut self, tx: Transaction) -> bool {
-
         // Only allow addition of unique txids to ledger
         for transaction in self.transactions.iter() {
             if tx.id == transaction.id {
@@ -51,36 +50,41 @@ impl Ledger {
     }
 
     /// Serialize ledger to disk
-    pub fn save(&self, file: &mut File) -> Result<(), &'static str>{
-        let serialized = match serde_json::to_string(&self) {
-            Ok(data) => data,
-            Err(reason) => return Err("Unable to serialize json"),
-        };
-
-        return match write!(file, "{}", serialized) {
-            Ok(()) => Ok(()),
-            Err(reason) => Err("Unable to write to file")
-        };
+    pub fn save(&self, file: &mut File) -> Result<(), Error> {
+        let serialized = serde_json::to_string(&self)?;
+        return write!(file, "{}", serialized);
     }
 
     /// Serialize ledger from disk
     pub fn load(&self, file: &mut File) -> Result<Ledger, &'static str> {
         match file.seek(SeekFrom::Start(0)) {
-            Ok(ledger) => {},
-            Err(reason) => {return Err("Unable to start from 0th line in file");}
+            Ok(ledger) => {}
+            Err(reason) => {
+                return Err("Unable to start from 0th line in file");
+            }
         };
 
         let mut buf = String::new();
         match file.read_to_string(&mut buf) {
-            Ok(ledger) => {},
-            Err(reason) => {return Err("Unable to read ledger json string from file");}
+            Ok(ledger) => {}
+            Err(reason) => {
+                return Err("Unable to read ledger json string from file");
+            }
         };
 
         return match serde_json::from_str(&buf.to_string()) {
             Ok(serde_ledger) => Ok(serde_ledger),
-            Err(reason) =>  Err("Unable to parse string to ledger") 
+            Err(reason) => Err("Unable to parse string to ledger"),
+        };
+    }
 
+    pub fn get_acc_by_name(&self, name: String) -> Option<Account> {
+        for account in &self.accounts {
+            if account.name == name {
+                return Some(account.clone());
+            }
         }
+        return None;
     }
 }
 
@@ -124,5 +128,19 @@ mod tests {
 
         // Deserialize ledger from disk
         let serde_ledger: Ledger = serde_json::from_str(&buf.to_string()).unwrap();
+    }
+
+    #[test]
+    fn test_get_acc_by_name() {
+        let acc_0 = Account::new(0, String::from("acc_0"), 100).unwrap();
+        let acc_1 = Account::new(1, String::from("acc_1"), 100).unwrap();
+        let mut acc_vec = Vec::new();
+        acc_vec.push(acc_0.clone());
+        acc_vec.push(acc_1.clone());
+        let tx_vec = Vec::new();
+        let ledger = Ledger::new(acc_vec, tx_vec);
+        
+        let account: Account = ledger.get_acc_by_name(String::from("acc_0")).unwrap();
+        assert_eq!(account.name, String::from("acc_0"));
     }
 }
