@@ -1,7 +1,7 @@
 use crate::account::Account;
 use crate::ledger::Ledger;
 use crate::transaction::Transaction;
-use prettytable::{Cell, Row, Table};
+use prettytable::{Table};
 
 /// Initial greeting to the program
 pub fn print_header() {
@@ -11,18 +11,18 @@ pub fn print_header() {
 /// Help command
 pub fn print_help() {
     println!(
-        "\nsl\t\t: Save ledger state to disk\n\
-        ll\t\t: Load ledger state from disk\n\
-    ca <name> <balance>\t\t: Create account\n\
-    ct <date> <name> <account_name> <amount> ...\t\t: Create transaction\n\
-    la [account_name]\t\t: Print account\n\
-    lt [transaction_name]\t\t: Print transaction\n\
-    quit\t\t: Exit ledger application saving ledger state to disk\n\
-    nsquit\t\t: Exit ledger application without saving ledger state to disk\n\
-    help\t\t: Print this help text\n\n\
-    NOTE: optional arguments are annotated with [optional] \
-    and required arguments with <required>
-   "
+        "\nsl\t\t\t\t\t\t: Save ledger state to disk\n\
+        ll\t\t\t\t\t\t: Load ledger state from disk\n\
+        ca <name> <balance>\t\t\t\t: Create account\n\
+        ct <date> <name> <account_name> <amount> ...\t: Create transaction\n\
+        la [account_name]\t\t\t\t: Print account, no arguments prints all accounts\n\
+        lt [transaction_name]\t\t\t\t: Print transaction, no arguments prints all transactions\n\
+        quit\t\t\t\t\t\t: Exit ledger application saving ledger state to disk\n\
+        nsquit\t\t\t\t\t\t: Exit ledger application without saving ledger state to disk\n\
+        help\t\t\t\t\t\t: Print this help text\n\n\
+        NOTE: optional arguments are annotated with [optional] \
+        and required arguments with <required>
+       "
     );
 }
 

@@ -1,27 +1,21 @@
 use serde::{Deserialize, Serialize};
 use std::cmp;
-use std::fmt;
 
-/// Accounts represent a pool of funds
+/// Accounts represent an amount of funds under a unique name 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Account {
     pub id: i32,
     pub name: String,
     pub balance: i32,
 }
+
 impl Account {
     pub fn new(id: i32, name: String, balance: i32) -> Result<Account, &'static str> {
         return match balance {
-            b if b >= 0 => Ok(Account { id, name, balance }),
-            b if b < 0 => Err("invalid balance ( less than zero)"),
+            bal if bal >= 0 => Ok(Account { id, name, balance }),
+            bal if bal < 0 => Err("invalid balance ( less than zero)"),
             _ => Err("unknown error"),
         };
-    }
-}
-
-impl fmt::Display for Account {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} ({}): {}\n", self.id, self.name, self.id)
     }
 }
 

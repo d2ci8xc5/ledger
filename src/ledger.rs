@@ -3,8 +3,7 @@ use crate::transaction::Transaction;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Error};
-use std::io::{Read, Seek, SeekFrom, Write};
+use std::io::{Error, Read, Seek, SeekFrom, Write};
 
 /// Ledger represents a collection of accounts and transactions.
 #[derive(Serialize, Deserialize, Debug)]
@@ -65,6 +64,7 @@ impl Ledger {
 
     /// Serialize ledger to disk
     pub fn save(&self, file: &mut File) -> Result<(), Error> {
+        file.set_len(0);
         let serialized = serde_json::to_string(&self)?;
         return write!(file, "{}", serialized);
     }

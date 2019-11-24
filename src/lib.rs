@@ -5,6 +5,7 @@ pub mod utils;
 
 #[macro_use]
 extern crate prettytable;
+
 use crate::account::Account;
 use crate::ledger::Ledger;
 use crate::transaction::Transaction;
@@ -16,6 +17,7 @@ use std::io::prelude::*;
 
 /// Program command parser and executor
 pub fn run_loop() {
+    // Id tracker
     let mut next_txid = 0i32;
     let mut next_accid = 0i32;
     let db_path = "database/ledger.json";
@@ -26,7 +28,7 @@ pub fn run_loop() {
         .read(true)
         .write(true)
         .create(true)
-        .open("database/ledger.json")
+        .open(db_path)
         .unwrap();
 
     print_header();
@@ -56,7 +58,7 @@ pub fn run_loop() {
             "ll" => {
                 // Load ledger
                 match main_ledger.load(&mut main_file) {
-                    Ok(ledger) => {}
+                    Ok(ledger) => {main_ledger = ledger; println!("Loaded ledger from disk");}, 
                     Err(reason) => {
                         println!("{}", reason);
                     }
@@ -109,16 +111,17 @@ pub fn run_loop() {
                     );
                     continue;
                 }
+                let date = String::from(args[1]);
+                let name = String::from(args[2]);
                 let mut entries: Vec<(Account, i32)> = Vec::new();
-                for i in (2..args.len()).step_by(2) {
+                for i in (3..args.len()).step_by(2) {
                     // Get account by name
                     let acc = main_ledger.get_acc_by_name(String::from(args[i])).unwrap();
                     let amount: i32 = args[i + 1].parse::<i32>().unwrap();
                     &entries.push((acc, amount));
                 }
 
-                let date = String::from(args[1]);
-                let tx = match Transaction::new(next_txid, date, String::from(""), entries) {
+                let tx = match Transaction::new(next_txid, date, name, entries) {
                     Ok(trans) => trans,
                     Err(reason) => {
                         println!("{}", reason);
@@ -134,7 +137,7 @@ pub fn run_loop() {
                 }
             }
             "la" => {
-                // List account balance
+                // List account 
                 // Empty call
                 if args.len() == 1 {
                     list_account(&main_ledger.accounts);
@@ -145,8 +148,15 @@ pub fn run_loop() {
                 }
             }
             "lt" => {
-                // List transactions
-                list_transaction(&main_ledger.transactions);
+                // List transaction
+                // Empty call
+                if args.len() == 1 {
+                    list_transaction(&main_ledger.transactions);
+                } else {
+                    // Specified transaction 
+                    let tx = main_ledger.get_tx_by_name(String::from(args[1])).unwrap();
+                    list_transaction(&vec![tx]);
+                }
             }
             "quit" => {
                 // Quit

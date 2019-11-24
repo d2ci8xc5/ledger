@@ -55,7 +55,6 @@ mod tests {
     use crate::account::Account;
     #[test]
     fn test_transaction_new() {
-        // format (Account, balance to move)
         let tuple_0 = (Account::new(0, String::from("acc_0"), 100).unwrap(), 100);
         let tuple_1 = (Account::new(1, String::from("acc_1"), 100).unwrap(), -100);
         let mut vec: Vec<(Account, i32)> = Vec::new();
@@ -66,8 +65,6 @@ mod tests {
             Err(reason) => assert!(false),
             _ => assert!(false),
         }
-
-        // TODO: Check fields are valid
     }
 
     #[test]
