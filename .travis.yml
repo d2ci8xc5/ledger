@@ -1,6 +1,10 @@
 language: rust
 
 sudo: required
+os:
+  - windows
+  - linux
+  - osx
 
 rust:
   - stable
