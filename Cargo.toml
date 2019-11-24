@@ -7,8 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-shrust = "0.0.7" # Quick CLI command loop and registry 
 chrono = "0.4" # Date/Time
 serde = { version = "1.0", features = ["derive"] } # Ser/Deser
 serde_json = "1.0" # JSON
 tempfile = "3" # Temporary files for testing
+prettytable-rs = "^0.8" # Pretty print tables

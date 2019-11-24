@@ -22,10 +22,13 @@ impl Ledger {
     }
 
     /// Add an account to the ledger
-    fn add_account(&mut self, acc: Account) -> bool {
-        // Only allow addition of unique accounts to ledger
+    pub fn add_account(&mut self, acc: Account) -> bool {
+        // Only allow addition of unique accounts (id and name are uuid) to ledger
         for account in self.accounts.iter() {
             if acc.id == account.id {
+                return false;
+            }
+            if acc.name == account.name {
                 return false;
             }
         }
@@ -33,9 +36,10 @@ impl Ledger {
         return true;
     }
 
-    // TODO: only allow added accounts to tx
+    // TODO: only allow added accounts to tx (collect)
     /// Write a transaction to the ledger
-    fn add_transaction(&mut self, tx: Transaction) -> bool {
+    pub fn add_transaction(&mut self, tx: Transaction) -> bool {
+
         // Only allow addition of unique txids to ledger
         for transaction in self.transactions.iter() {
             if tx.id == transaction.id {
@@ -47,18 +51,36 @@ impl Ledger {
     }
 
     /// Serialize ledger to disk
-    pub fn save(&self, file: &mut File) {
-        let serialized = serde_json::to_string(&self).unwrap();
-        write!(file, "{}", serialized).unwrap();
+    pub fn save(&self, file: &mut File) -> Result<(), &'static str>{
+        let serialized = match serde_json::to_string(&self) {
+            Ok(data) => data,
+            Err(reason) => return Err("Unable to serialize json"),
+        };
+
+        return match write!(file, "{}", serialized) {
+            Ok(()) => Ok(()),
+            Err(reason) => Err("Unable to write to file")
+        };
     }
 
     /// Serialize ledger from disk
-    pub fn load(&self, file: &mut File) -> Ledger {
-        file.seek(SeekFrom::Start(0)).unwrap();
+    pub fn load(&self, file: &mut File) -> Result<Ledger, &'static str> {
+        match file.seek(SeekFrom::Start(0)) {
+            Ok(ledger) => {},
+            Err(reason) => {return Err("Unable to start from 0th line in file");}
+        };
+
         let mut buf = String::new();
-        file.read_to_string(&mut buf).unwrap();
-        let serde_ledger: Ledger = serde_json::from_str(&buf.to_string()).unwrap();
-        return serde_ledger;
+        match file.read_to_string(&mut buf) {
+            Ok(ledger) => {},
+            Err(reason) => {return Err("Unable to read ledger json string from file");}
+        };
+
+        return match serde_json::from_str(&buf.to_string()) {
+            Ok(serde_ledger) => Ok(serde_ledger),
+            Err(reason) =>  Err("Unable to parse string to ledger") 
+
+        }
     }
 }
 
