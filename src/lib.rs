@@ -20,7 +20,7 @@ pub fn run_loop() {
     // Id tracker
     let mut next_txid = 0i32;
     let mut next_accid = 0i32;
-    let db_path = "database/ledger.json";
+    let db_path = "./ledger.json";
 
     // Main ledger and file
     let mut main_ledger = Ledger::new(Vec::new(), Vec::new());
@@ -58,7 +58,10 @@ pub fn run_loop() {
             "ll" => {
                 // Load ledger
                 match main_ledger.load(&mut main_file) {
-                    Ok(ledger) => {main_ledger = ledger; println!("Loaded ledger from disk");}, 
+                    Ok(ledger) => {
+                        main_ledger = ledger;
+                        println!("Loaded ledger from disk");
+                    }
                     Err(reason) => {
                         println!("{}", reason);
                     }
@@ -104,9 +107,9 @@ pub fn run_loop() {
             }
             "ct" => {
                 // Create transaction
-                if args.len() < 1 {
+                if args.len() < 5 {
                     println!(
-                        "Invalid arguments: {} args given, 2 args required",
+                        "Invalid arguments: {} arguments given, atleast 5 arguments required",
                         args.len() - 1
                     );
                     continue;
@@ -116,8 +119,15 @@ pub fn run_loop() {
                 let mut entries: Vec<(Account, i32)> = Vec::new();
                 for i in (3..args.len()).step_by(2) {
                     // Get account by name
-                    let acc = main_ledger.get_acc_by_name(String::from(args[i])).unwrap();
-                    let amount: i32 = args[i + 1].parse::<i32>().unwrap();
+                    let acc = match main_ledger.get_acc_by_name(String::from(args[i])) {
+                        Some(account) => account,
+                        None => {
+                            println!("Account \"{}\" not found", args[i]);
+                            continue;
+                        }
+                    };
+                    let amount: i32 = args[i + 1].parse::<i32>().expect("A number is required");
+
                     &entries.push((acc, amount));
                 }
 
@@ -137,7 +147,7 @@ pub fn run_loop() {
                 }
             }
             "la" => {
-                // List account 
+                // List account
                 // Empty call
                 if args.len() == 1 {
                     list_account(&main_ledger.accounts);
@@ -153,14 +163,18 @@ pub fn run_loop() {
                 if args.len() == 1 {
                     list_transaction(&main_ledger.transactions);
                 } else {
-                    // Specified transaction 
+                    // Specified transaction
                     let tx = main_ledger.get_tx_by_name(String::from(args[1])).unwrap();
                     list_transaction(&vec![tx]);
                 }
             }
             "quit" => {
                 // Quit
-                main_ledger.save(&mut main_file);
+                match main_ledger.save(&mut main_file) {
+                    Ok(()) => {}
+                    Err(reason) => println!("{}", reason),
+                    _ => panic!("unknown save error"),
+                }
                 break;
             }
             "nsquit" => {

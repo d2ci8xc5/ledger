@@ -1,7 +1,7 @@
 use crate::account::Account;
 use crate::ledger::Ledger;
 use crate::transaction::Transaction;
-use prettytable::{Table};
+use prettytable::Table;
 
 /// Initial greeting to the program
 pub fn print_header() {

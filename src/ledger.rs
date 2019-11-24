@@ -36,7 +36,6 @@ impl Ledger {
         return true;
     }
 
-    // TODO: only allow added accounts to tx (collect)
     /// Write a transaction to the ledger
     /// Upon addition of a transaction to the ledger, the transaction will be committed
     pub fn add_transaction(&mut self, tx: Transaction) -> bool {

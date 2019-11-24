@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::cmp;
 
-/// Accounts represent an amount of funds under a unique name 
+/// Accounts represent an amount of funds under a unique name
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Account {
     pub id: i32,
@@ -12,6 +12,7 @@ pub struct Account {
 impl Account {
     pub fn new(id: i32, name: String, balance: i32) -> Result<Account, &'static str> {
         return match balance {
+            // Balance must be >= 0 on initialisation
             bal if bal >= 0 => Ok(Account { id, name, balance }),
             bal if bal < 0 => Err("invalid balance ( less than zero)"),
             _ => Err("unknown error"),
@@ -19,6 +20,7 @@ impl Account {
     }
 }
 
+/// Comparsion operation implementation
 impl cmp::PartialEq for Account {
     fn eq(&self, other: &Self) -> bool {
         (self.name == other.name && self.balance == other.balance && self.id == other.id)
