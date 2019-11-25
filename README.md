@@ -1,6 +1,6 @@
 # ledger
 [![Build Status](https://travis-ci.org/d2ci8xc5/ledger.svg?branch=master)](https://travis-ci.org/d2ci8xc5/ledger) [![codecov](https://codecov.io/gh/d2ci8xc5/ledger/branch/master/graph/badge.svg)](https://codecov.io/gh/d2ci8xc5/ledger)
-![](images/peek.gif)
+<!--[](images/peek.gif) -->
 ### support 
 Working on Ubuntu 18.04(LTS) and Windows, not sure on support for MacOS and other distributions. 
 ### notes
