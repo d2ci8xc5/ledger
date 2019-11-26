@@ -2,13 +2,15 @@ pub mod account;
 pub mod ledger;
 pub mod transaction;
 pub mod utils;
-
+pub mod command;
 #[macro_use]
 extern crate prettytable;
 
 use crate::account::Account;
 use crate::ledger::Ledger;
 use crate::transaction::Transaction;
+use crate::command::Command;
+use std::str::FromStr;
 use crate::utils::*;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -42,11 +44,12 @@ pub fn run_loop() {
             break;
         }
         let args: Vec<&str> = buffer.trim_end().split(' ').collect();
-        match args[0] {
-            "help" => {
+        let cmd : Command = Command::from_str(args[0]).unwrap();
+        match cmd {
+            Command::help => {
                 print_help();
             }
-            "sl" => {
+            Command::save_ledger => {
                 // Save ledger
                 match main_ledger.save(&mut main_file) {
                     Err(reason) => {
@@ -55,7 +58,7 @@ pub fn run_loop() {
                     _ => {}
                 }
             }
-            "ll" => {
+            Command::load_ledger => {
                 // Load ledger
                 match main_ledger.load(&mut main_file) {
                     Ok(ledger) => {
@@ -67,11 +70,11 @@ pub fn run_loop() {
                     }
                 };
             }
-            "cl" => {
+            Command::clear_ledger => {
                 // Clear ledger
                 main_ledger = Ledger::new(Vec::new(), Vec::new());
             }
-            "ca" => {
+            Command::create_account => {
                 // Create account
                 if args.len() != 3 {
                     println!(
@@ -105,7 +108,7 @@ pub fn run_loop() {
                 next_accid += 1;
                 println!("Added account to ledger");
             }
-            "ct" => {
+            Command::create_transaction => {
                 // Create transaction
                 if args.len() < 5 {
                     println!(
@@ -146,7 +149,7 @@ pub fn run_loop() {
                     continue;
                 }
             }
-            "la" => {
+            Command::list_account => {
                 // List account
                 // Empty call
                 if args.len() == 1 {
@@ -157,7 +160,7 @@ pub fn run_loop() {
                     list_account(&vec![acc]);
                 }
             }
-            "lt" => {
+            Command::list_transaction => {
                 // List transaction
                 // Empty call
                 if args.len() == 1 {
@@ -168,7 +171,7 @@ pub fn run_loop() {
                     list_transaction(&vec![tx]);
                 }
             }
-            "quit" => {
+            Command::quit => {
                 // Quit
                 match main_ledger.save(&mut main_file) {
                     Ok(()) => {}
@@ -177,7 +180,7 @@ pub fn run_loop() {
                 }
                 break;
             }
-            "nsquit" => {
+            Command::no_save_quit => {
                 // No save quit
                 break;
             }
